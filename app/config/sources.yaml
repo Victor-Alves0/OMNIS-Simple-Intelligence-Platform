@@ -1,0 +1,171 @@
+# ============================================================
+# CATÁLOGO DE FONTES DE COLETA (DATA INGESTION LAYER)
+# V2 - ADICIONADO SUPORTE A 'trust_score' POR FONTE
+# ============================================================
+
+global:
+  ingestion:
+    deduplication: true
+    max_content_length: 5000
+    default_language: en
+    user_agent: "OMNIS-Intel-Bot/2.0 (+http://omnis-intel.internal)"
+    
+  throttling:
+    min_delay_seconds: 2.0
+    max_delay_seconds: 10.0
+
+ner:
+  enabled: true
+
+# ============================================================
+# 1. GDELT PROJECT (Eventos Globais)
+# ============================================================
+gdelt:
+  enabled: true
+  # GDELT é uma fonte agregada de notícias. Sua confiança é a média do mercado.
+  trust_score: 0.75 
+  url_lastupdate: http://data.gdeltproject.org/gdeltv2/lastupdate.txt
+  base_filters:
+    - "abs(GoldsteinScale) >= 1.0" 
+    - "NumArticles >= 2"
+
+# ============================================================
+# 2. TELEGRAM INTELLIGENCE (HUMINT/OSINT)
+# ============================================================
+telegram:
+  enabled: true
+  client_session: "omnis_session"
+  
+  # --- MUDANÇA ESTRUTURAL: De lista de strings para lista de objetos ---
+  channels:
+    # --- High Value Targets (HVT) - Alta Confiança ---
+    - name: osinttechnical
+      trust_score: 0.90
+    - name: OSINTdefender
+      trust_score: 0.85
+    - name: milinfolive
+      trust_score: 0.80
+    - name: war_monitor
+      trust_score: 0.80
+    - name: ClashReport
+      trust_score: 0.75
+    
+    # --- Mídia Estatal / Afiliada - Viés Elevado, Factual com Cautela ---
+    - name: tasnimnews         # Afiliado IRGC
+      trust_score: 0.60
+    - name: sepah_pasdaran     # Oficial IRGC
+      trust_score: 0.60
+    - name: presstv            # Mídia Estatal Irã
+      trust_score: 0.55
+    - name: rian_ru            # Mídia Estatal Rússia
+      trust_score: 0.55
+
+    # --- Canais de Notícias / Agregadores - Confiança Média ---
+    - name: middleeastobserver
+      trust_score: 0.70
+    - name: almanarnews
+      trust_score: 0.65 # Afiliado Hezbollah
+    - name: UaOnlii
+      trust_score: 0.70 # Pró-Ucrânia
+    - name: southfronteng
+      trust_score: 0.60 # Pró-Rússia
+
+    # --- Análise / Think Tanks - Confiança Alta, mas com viés de análise ---
+    - name: iswnews
+      trust_score: 0.85
+    - name: iswnews_en
+      trust_score: 0.85
+    - name: iswnews_ru
+      trust_score: 0.85
+    - name: DefenseBlog
+      trust_score: 0.80
+    - name: IndiaGeoPolitics
+      trust_score: 0.75
+
+# ============================================================
+# 3. RSS FEEDS (VIA GOOGLE NEWS)
+# ============================================================
+rss:
+  enabled: true
+  update_interval_minutes: 30
+  
+  feeds:
+    # Monitora o site da Reuters
+    - url: "https://news.google.com/rss/search?q=site:reuters.com&hl=en-US&gl=US&ceid=US:en"
+      category: mainstream_media
+      region: global
+      trust_score: 0.95 # Agência de notícias primária
+
+    # Monitora "israel" E "iran" nos sites da AP e Al Jazeera
+    - url: "https://news.google.com/rss/search?q=%22israel%22+%22iran%22+site:apnews.com+OR+site:aljazeera.com&hl=en-US&gl=US&ceid=US:en"
+      category: thematic_intelligence
+      region: middle_east
+      trust_score: 0.90 # AP é alta, Al Jazeera tem viés regional
+
+    # Monitora "míssil" OU "drone" no Brasil
+    - url: "https://news.google.com/rss/search?q=ucrânia+(míssil+OR+drone)&hl=pt-BR&gl=BR&ceid=BR:pt-BR"
+      category: thematic_intelligence
+      region: europe
+      trust_score: 0.80 # Mídia brasileira como fonte secundária para o conflito
+
+    # Monitora menções ao "South China Sea"
+    - url: "https://news.google.com/rss/search?q=%22South+China+Sea%22+site:scmp.com+OR+site:channelnewsasia.com&hl=en-US&gl=SG&ceid=SG:en"
+      category: thematic_intelligence
+      region: asia_pacific
+      trust_score: 0.85 # Fontes locais de alta qualidade
+
+    # Monitora o Long War Journal e o ISW
+    - url: "https://news.google.com/rss/search?q=site:longwarjournal.org+OR+site:understandingwar.org&hl=en-US&gl=US&ceid=US:en"
+      category: specialized_blog
+      region: global_analysis
+      trust_score: 0.90 # Think tanks especializados e respeitados
+
+    # Segurança marítima no Mar Vermelho e Bab el-Mandeb
+    - url: "https://news.google.com/rss/search?q=%22Red+Sea%22+OR+%22Bab+el-Mandeb%22+site:reuters.com+OR+site:bbc.com&hl=en-US&gl=US&ceid=US:en"
+      category: maritime_security
+      region: middle_east
+      trust_score: 0.9
+
+    # Cobertura do eixo Irã / proxies (Houthi, Hezbollah) em fontes locais
+    - url: "https://news.google.com/rss/search?q=Houthi+OR+Hezbollah+site:arabnews.com+OR+site:timesofisrael.com&hl=en-US&gl=US&ceid=US:en"
+      category: thematic_intelligence
+      region: middle_east
+      trust_score: 0.82
+
+    # Escalada Ucrânia/Rússia - imprensa regional
+    - url: "https://news.google.com/rss/search?q=site:kyivindependent.com+OR+site:pravda.com.ua&hl=en-US&gl=US&ceid=US:en"
+      category: ukraine_watch
+      region: europe
+      trust_score: 0.8
+
+    # Indo-Pacífico / Taiwan Strait
+    - url: "https://news.google.com/rss/search?q=Taiwan+strait+site:asia.nikkei.com+OR+site:taipeitimes.com&hl=en-US&gl=US&ceid=US:en"
+      category: indo_pacific
+      region: asia_pacific
+      trust_score: 0.85
+
+    # Cybersecurity incidents
+    - url: "https://news.google.com/rss/search?q=cyberattack+OR+ransomware+site:bleepingcomputer.com+OR+site:therecord.media&hl=en-US&gl=US&ceid=US:en"
+      category: cyber_ops
+      region: global
+      trust_score: 0.78
+
+    # Protestos e instabilidade civil
+    - url: "https://news.google.com/rss/search?q=protest+OR+riot+site:france24.com+OR+site:nytimes.com&hl=en-US&gl=US&ceid=US:en"
+      category: civil_unrest
+      region: global
+      trust_score: 0.9
+
+# ============================================================
+# 4. API SEARCHES (Optional / On Demand)
+# ============================================================
+x_search:
+  enabled: false
+  # Posts no X geralmente têm a menor confiança, a menos que venham de contas verificadas.
+  # A lógica de confiança aqui seria mais complexa (ex: por autor).
+  trust_score: 0.40 
+  mode: Latest
+  limit: 50
+  queries:
+    - "(military OR escalation) (Somalia OR Ukraine OR Israel OR Taiwan)"
+    - "(IRGC OR nuclear) (Iran OR Syria)"

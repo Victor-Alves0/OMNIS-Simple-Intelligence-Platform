@@ -1,0 +1,115 @@
+services:
+  neo4j:
+    image: neo4j:5.15.0-community
+    container_name: omnis_neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+    environment:
+      NEO4J_AUTH: "${NEO4J_USER}/${NEO4J_PASSWORD}"
+      NEO4J_apoc_export_file_enabled: "true"
+      NEO4J_apoc_import_file_enabled: "true"
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "${NEO4J_USER}", "-p", "${NEO4J_PASSWORD}", "RETURN 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  omnis-app:
+    build: .
+    container_name: omnis_app
+    volumes:
+      # <<< MUDANÇA AQUI: Mapeia o código local para dentro do contêiner >>>
+      - .:/app
+      # O volume das sessões do telegram permanece, mas o mapeamento do código é a chave
+      - ./volumes/telegram_sessions:/app/sessions
+    environment:
+      PYTHONPATH: /app
+      NEO4J_URI: "${NEO4J_URI}"
+      NEO4J_USER: "${NEO4J_USER}"
+      NEO4J_PASSWORD: "${NEO4J_PASSWORD}"
+      TELEGRAM_API_ID: "${TELEGRAM_API_ID}"
+      TELEGRAM_API_HASH: "${TELEGRAM_API_HASH}"
+      TELEGRAM_SESSION_NAME: "${TELEGRAM_SESSION_NAME}"
+      DASHBOARD_USER: "${DASHBOARD_USER}"
+      DASHBOARD_PASS: "${DASHBOARD_PASS}"
+      OPENROUTER_API_KEY: "${OPENROUTER_API_KEY}"
+      METRICS_PORT: "9464"
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    command: python -m app.main
+
+  omnis-dashboard:
+    build: .
+    container_name: omnis_dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    environment:
+      PYTHONPATH: /app
+      NEO4J_URI: "${NEO4J_URI}"
+      NEO4J_USER: "${NEO4J_USER}"
+      NEO4J_PASSWORD: "${NEO4J_PASSWORD}"
+      DASHBOARD_USER: "${DASHBOARD_USER:-admin}"
+      DASHBOARD_PASS: "${DASHBOARD_PASS:-nsa-secure-2026}"
+      # Adicionando a chave do OpenRouter para o contêiner
+      OPENROUTER_API_KEY: "${OPENROUTER_API_KEY}"
+      METRICS_PORT: "9465"
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    command: >
+      streamlit run app/ui/dashboard.py
+      --server.port=8501
+      --server.address=0.0.0.0
+      --server.headless=true
+
+  omnis-api:
+    build: .
+    container_name: omnis_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      PYTHONPATH: /app
+      NEO4J_URI: "${NEO4J_URI}"
+      NEO4J_USER: "${NEO4J_USER}"
+      NEO4J_PASSWORD: "${NEO4J_PASSWORD}"
+      METRICS_PORT: "9466"
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    command: >
+      uvicorn app.api.graph_explorer:app
+      --host 0.0.0.0
+      --port 8000
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: omnis_prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - omnis-api
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: omnis_grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  neo4j_data:
+  grafana_data:

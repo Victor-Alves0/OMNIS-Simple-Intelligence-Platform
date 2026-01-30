@@ -1,0 +1,56 @@
+﻿themes:
+  - id: somalia_escalation
+    description: "Conflito ativo na Somália (AFRICOM vs Al-Shabaab)"
+    severity_boost: 1.2
+    logic:
+      actors: [USA, AFRICOM, SOMALIA, AL_SHABAAB]
+      concepts: [military_maneuver, terror_attack]
+
+  - id: iran_axis_activity
+    description: "Atividade do Irã e proxies na região (Irã, Hezbollah, Houthis, Hamas)"
+    severity_boost: 1.5
+    logic:
+      actors: [IRAN, IRGC, HEZBOLLAH, HOUTHI, HAMAS, ISRAEL, USA, SAUDI_ARABIA]
+      concepts: [military_maneuver, critical_infrastructure, geopolitics]
+
+  - id: nuclear_tension
+    description: "Ameaças nucleares globais (Rússia, EUA, Irã, Coreia do Norte)"
+    severity_boost: 2.0
+    logic:
+      actors: [RUSSIA, USA, IRAN, NORTH_KOREA, ISRAEL]
+      concepts: [critical_threat]
+
+  - id: red_sea_security
+    description: "Segurança marítima no Mar Vermelho e Bab el-Mandeb"
+    severity_boost: 1.8
+    logic:
+      actors: [HOUTHI, IRAN, USA, UK, SAUDI_ARABIA, EGYPT, ISRAEL]
+      concepts: [maritime_security, critical_infrastructure]
+
+  - id: ukraine_front
+    description: "Escalada no teatro Ucrânia/Rússia"
+    severity_boost: 1.6
+    logic:
+      actors: [RUSSIA, UKRAINE, NATO, BELARUS, WAGNER]
+      concepts: [military_maneuver, critical_infrastructure]
+
+  - id: indo_pacific_pressure
+    description: "Pressão militar no Indo-Pacífico (Taiwan, Mar do Sul da China)"
+    severity_boost: 1.4
+    logic:
+      actors: [CHINA, TAIWAN, USA, JAPAN, PHILIPPINES, AUSTRALIA, INDIA]
+      concepts: [military_maneuver, geopolitics]
+
+  - id: global_cyber_ops
+    description: "Campanhas cibernéticas contra infraestrutura crítica"
+    severity_boost: 1.1
+    logic:
+      actors: [USA, RUSSIA, CHINA, IRAN, NORTH_KOREA]
+      concepts: [cyber_intrusion, critical_infrastructure]
+
+  - id: civil_unrest_monitor
+    description: "Protestos massivos e violência política em hotspots"
+    severity_boost: 1.0
+    logic:
+      actors: [ISRAEL, GAZA, USA, FRANCE, BRAZIL]
+      concepts: [civil_unrest, terror_attack]

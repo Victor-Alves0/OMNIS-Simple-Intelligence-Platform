@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "omnis_app"
+    static_configs:
+      - targets:
+          - "omnis-app:9464"
+
+  - job_name: "omnis_dashboard"
+    static_configs:
+      - targets:
+          - "omnis-dashboard:9465"
+
+  - job_name: "omnis_api"
+    static_configs:
+      - targets:
+          - "omnis-api:9466"

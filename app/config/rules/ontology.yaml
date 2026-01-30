@@ -1,0 +1,58 @@
+﻿concepts:
+  critical_threat:
+    severity: 1.0
+    keywords:
+      pt: [arma nuclear, bomba atômica, declaração de guerra, invasão total, ogiva]
+      en: [nuclear weapon, atomic bomb, declaration of war, full-scale invasion, warhead]
+      ru: [ядерное оружие, атомная бомба, объявление войны, боеголовка]
+      ar: [سلاح نووي, قنبلة ذرية, إعلان الحرب]
+
+  military_maneuver:
+    severity: 0.7
+    keywords:
+      pt: [míssil, drone, ataque aéreo, bombardeio, tropas, tanques, artilharia, comboio]
+      en: [missile, drone, airstrike, bombardment, troops, tanks, artillery, convoy, uav]
+      ru: [ракета, дрон, авиаудар, бомбардировка, войска, танки, артиллерия]
+      ar: [صاروخ, طائرة بدون طيار, غارة جوية, قصف, قوات, دبابات]
+
+  geopolitics:
+    severity: 0.4
+    keywords:
+      pt: [sanções, tratado, cessar-fogo, negociações, tensão diplomática]
+      en: [sanctions, treaty, ceasefire, negotiations, diplomatic tension]
+      ru: [санкции, договор, перемирие, переговоры]
+
+  maritime_security:
+    severity: 0.6
+    keywords:
+      pt: [navio, comboio marítimo, estreito, mar vermelho, escolta naval]
+      en: [vessel, convoy, strait, red sea, naval escort, shipping lane]
+      ar: [سفينة, البحر الأحمر, مضيق, قافلة بحرية]
+
+  cyber_intrusion:
+    severity: 0.5
+    keywords:
+      pt: [ataque cibernético, hacker, ransomware, intrusão]
+      en: [cyber attack, hacker, ransomware, intrusion, malware]
+      ru: [кибератака, хакер, вредонос]
+
+  critical_infrastructure:
+    severity: 0.6
+    keywords:
+      pt: [rede elétrica, subestação, oleoduto, porto, refinaria]
+      en: [power grid, substation, pipeline, port, refinery]
+      ru: [электросеть, нефтепровод, порт]
+
+  civil_unrest:
+    severity: 0.45
+    keywords:
+      pt: [protesto, manifestação, greve geral, tumulto]
+      en: [protest, demonstration, general strike, riot]
+      es: [protesta, manifestación, huelga]
+
+  terror_attack:
+    severity: 0.8
+    keywords:
+      pt: [atentado, carro-bomba, ataque suicida, IED]
+      en: [terror attack, car bomb, suicide attack, IED]
+      ar: [تفجير, عملية انتحارية]

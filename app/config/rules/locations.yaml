@@ -1,0 +1,110 @@
+# app/config/rules/locations.yaml
+
+locations:
+  # ==================================
+  # PAÍSES (ID = CÓDIGO ISO-3)
+  # ==================================
+  - id: USA
+    name: "United States"
+    type: Country
+    region: North America
+    aliases: ["USA", "US", "United States", "America"]
+
+  - id: RUS
+    name: "Russia"
+    type: Country
+    region: Europe
+    aliases: ["Russia", "Russian Federation"]
+
+  - id: CHN
+    name: "China"
+    type: Country
+    region: East Asia
+    aliases: ["China", "PRC"]
+
+  - id: ISR
+    name: "Israel"
+    type: Country
+    region: Middle East
+    aliases: ["Israel", "State of Israel"]
+
+  - id: IRN
+    name: "Iran"
+    type: Country
+    region: Middle East
+    aliases: ["Iran", "Islamic Republic of Iran", "Irã"]
+
+  - id: UKR
+    name: "Ukraine"
+    type: Country
+    region: Europe
+    aliases: ["Ukraine", "Ucrânia"]
+
+  - id: SOM
+    name: "Somalia"
+    type: Country
+    region: Horn of Africa
+    aliases: ["Somalia"]
+
+  - id: SYR
+    name: "Syria"
+    type: Country
+    region: Middle East
+    aliases: ["Syria", "Síria"]
+
+  - id: IRQ
+    name: "Iraq"
+    type: Country
+    region: Middle East
+    aliases: ["Iraq", "Iraque"]
+
+  - id: YEM
+    name: "Yemen"
+    type: Country
+    region: Middle East
+    aliases: ["Yemen", "Iêmen"]
+
+  - id: LBN
+    name: "Lebanon"
+    type: Country
+    region: Middle East
+    aliases: ["Lebanon", "Líbano"]
+
+  - id: TWN
+    name: "Taiwan"
+    type: Country
+    region: East Asia
+    aliases: ["Taiwan", "Republic of China"]
+
+  # ==================================
+  # CIDADES E LOCAIS ESTRATÉGICOS
+  # ==================================
+  - id: GAZA_STRIP
+    name: "Gaza Strip"
+    type: Disputed Territory
+    region: Middle East
+    aliases: ["Gaza", "Gaza Strip", "Faixa de Gaza"]
+
+  - id: TEHRAN
+    name: "Tehran"
+    type: City
+    region: Middle East
+    aliases: ["Tehran", "Teerã"]
+
+  - id: STRAIT_OF_HORMUZ
+    name: "Strait of Hormuz"
+    type: Waterway
+    region: Middle East
+    aliases: ["Strait of Hormuz", "Estreito de Ormuz"]
+
+  - id: SOUTH_CHINA_SEA
+    name: "South China Sea"
+    type: Waterway
+    region: East Asia
+    aliases: ["South China Sea", "Mar do Sul da China"]
+
+  - id: MOGADISHU
+    name: "Mogadishu"
+    type: City
+    region: Horn of Africa
+    aliases: ["Mogadishu"]

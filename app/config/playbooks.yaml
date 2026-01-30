@@ -1,0 +1,24 @@
+﻿playbooks:
+  - id: overheat_axis
+    description: "Alerta quando proxies iranianos atingem score crítico"
+    min_score: 20
+    min_hotspot: 5
+    min_mentions: 5
+    actors: [IRGC, HEZBOLLAH, HOUTHI]
+    tags: [axis, escalation]
+
+  - id: global_civil_unrest
+    description: "Monitorar protestos globais com severidade alta"
+    min_score: 10
+    min_hotspot: 0
+    min_mentions: 10
+    actors: [PROTESTER, POLICE]
+    tags: [civil_unrest]
+
+  - id: maritime_watch
+    description: "Casos envolvendo hotspots marítimos (Red Sea)"
+    min_score: 8
+    min_hotspot: 15
+    min_mentions: 3
+    actors: [HOUTHI, IRAN, USA, UK]
+    tags: [maritime]

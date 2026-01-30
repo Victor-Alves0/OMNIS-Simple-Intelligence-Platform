@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+
+# Docker/Env
+.env
+docker-compose.override.yml
+volumes/
+
+# Telegram
+omnis_humint.session
+
+# Logs/Temp
+*.log
+.tmp/
+
+# IDE
+.idea/
+.vscode/

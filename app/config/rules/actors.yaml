@@ -1,0 +1,95 @@
+﻿actors:
+  normalization:
+    # Estados Unidos
+    "united states": "USA"
+    "united states of america": "USA"
+    "usa": "USA"
+    "america": "USA"
+    "white house": "USA"
+    "pentagon": "USA"
+    "us military": "USA"
+
+    # Rússia
+    "russian federation": "RUSSIA"
+    "russia": "RUSSIA"
+    "moscow": "RUSSIA"
+    "kremlin": "RUSSIA"
+    "putin": "RUSSIA"
+
+    # China
+    "china": "CHINA"
+    "prc": "CHINA"
+    "peoples republic": "CHINA"
+    "beijing": "CHINA"
+    "pla": "PLA"
+
+    # Europa
+    "united kingdom": "UK"
+    "great britain": "UK"
+    "london": "UK"
+    "nato": "NATO"
+    "european union": "EU"
+    "european commission": "EU"
+
+    # Oriente Médio / Axis of Resistance
+    "iran": "IRAN"
+    "tehran": "IRAN"
+    "islamic republic": "IRAN"
+    "irgc": "IRGC"
+    "sepah": "IRGC"
+    "pasdaran": "IRGC"
+    "quds force": "IRGC"
+    "hezbollah": "HEZBOLLAH"
+    "hezbollah media": "HEZBOLLAH"
+    "houthi": "HOUTHI"
+    "ansarallah": "HOUTHI"
+    "hamas": "HAMAS"
+    "idf": "ISRAEL"
+    "israel": "ISRAEL"
+    "tel aviv": "ISRAEL"
+    "gaza": "GAZA"
+    "qatar": "QATAR"
+    "saudi arabia": "SAUDI_ARABIA"
+    "riyadh": "SAUDI_ARABIA"
+    "uae": "UAE"
+    "dubai": "UAE"
+    "turkey": "TURKEY"
+    "ankara": "TURKEY"
+
+    # África
+    "somalia": "SOMALIA"
+    "al-shabaab": "AL_SHABAAB"
+    "shabaab": "AL_SHABAAB"
+    "africom": "AFRICOM"
+    "sudan": "SUDAN"
+    "rsf": "RSF"
+
+    # Eurásia
+    "ukraine": "UKRAINE"
+    "kyiv": "UKRAINE"
+    "zelensky": "UKRAINE"
+    "belarus": "BELARUS"
+    "wagner": "WAGNER"
+
+    # Ásia Pacífico
+    "north korea": "NORTH_KOREA"
+    "dprk": "NORTH_KOREA"
+    "kim jong un": "NORTH_KOREA"
+    "south korea": "SOUTH_KOREA"
+    "rok": "SOUTH_KOREA"
+    "japan": "JAPAN"
+    "tokyo": "JAPAN"
+    "taiwan": "TAIWAN"
+    "taipei": "TAIWAN"
+    "philippines": "PHILIPPINES"
+    "manila": "PHILIPPINES"
+    "australia": "AUSTRALIA"
+    "india": "INDIA"
+    "new delhi": "INDIA"
+    "pakistan": "PAKISTAN"
+
+    # Economia / Energia
+    "opec": "OPEC"
+    "bp": "BP"
+    "aramco": "ARAMCO"
+    "rosneft": "ROSNEFT"
