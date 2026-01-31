@@ -1,6 +1,6 @@
 # OMNIS Intelligence Platform
 
-OMNIS é meu laboratório pessoal para coleta, enriquecimento e visualização de sinais em tempo real. O projeto nasce da vontade de replicar — em escala de developer solo — algumas ideias usadas por plataformas como Palantir ou pelos times de análise de risco da NSA. Tudo roda com containers, Neo4j como grafo central e um dashboard Streamlit que costura coleta, scoring, playbooks e observabilidade.
+OMNIS é meu simples laboratório pessoal para coleta, enriquecimento e visualização de sinais em tempo real. O projeto nasce da vontade de replicar algumas ideias usadas por plataformas como Palantir ou pelos times de análise de risco da NSA. Tudo roda com containers, Neo4j como grafo central e um dashboard Streamlit que costura coleta, scoring, playbooks e observabilidade.
 
 ## O que ele faz hoje
 
@@ -42,20 +42,33 @@ OMNIS é meu laboratório pessoal para coleta, enriquecimento e visualização d
 
 1. Copie `.env.example` (ou `.env`) e preencha:
    ```ini
-   NEO4J_URI=bolt://neo4j:7687
+   # Configurações do Neo4j
    NEO4J_USER=neo4j
-   NEO4J_PASSWORD=secret
+   NEO4J_PASSWORD=DuskCrown5
+   NEO4J_URI=bolt://neo4j:7687
 
-   TELEGRAM_API_ID=123456
-   TELEGRAM_API_HASH=abcdef0123456789
-   TELEGRAM_SESSION_NAME=omnis_session
-   TELEGRAM_SESSIONS_DIR=./volumes/telegram_sessions
+   # Configurações do Postgres
+   POSTGRES_USER=omnis_admin
+   POSTGRES_PASSWORD=Antennae4
+   POSTGRES_DB=omnis_metadata
 
+   # Chaves de API
+   OPENROUTER_API_KEY=
+
+   # Telegram
+   TELEGRAM_API_ID=
+   TELEGRAM_API_HASH=
+   TELEGRAM_SESSION_NAME=omnis_humint
+
+   # X
+   X_CONSUMER_KEY=
+   X_CONSUMER_SECRET=
+   X_ACCESS_TOKEN=
+   X_ACCESS_TOKEN_SECRET=
+
+   # Dashboard
    DASHBOARD_USER=admin
-   DASHBOARD_PASS=super-secret
-
-   OPENROUTER_API_KEY=sk-...
-   OPENROUTER_SITE_URL=https://meu-domínio
+   DASHBOARD_PASS=admin
    ```
 
 2. Gere o arquivo de sessão do Telegram (apenas uma vez):
@@ -72,7 +85,7 @@ OMNIS é meu laboratório pessoal para coleta, enriquecimento e visualização d
 ## Executando
 
 ```bash
-docker compose up --build
+docker compose up -d --build
 ```
 
 Serviços relevantes:
@@ -91,8 +104,6 @@ Login padrão do dashboard: `admin / nsa-secure-2026` (configure via `.env`).
 
 - O código usa `PYTHONPATH=/app` dentro dos containers, mas também roda localmente (`pip install -r requirements.txt`).
 - Testes unitários básicos estão em `tests/`. Rode com `pytest`.
-- Para enriquecer os dados, gere sinais pelo pipeline: `python -m app.omnis_pipeline`.
-- O exporter Prometheus é inicializado automaticamente pelo dashboard (`METRICS_PORT` configurável).
 
 ## Roadmap pessoal
 
