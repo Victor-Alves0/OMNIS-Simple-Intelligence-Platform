@@ -1,25 +1,20 @@
-# app/utils/translation.py
 import openai
 
 from app.config.settings import OPENROUTER_API_KEY, OPENROUTER_SITE_URL
 from app.utils.omnis_logger import logger
 
-# --- CONFIGURAÇÃO OPENROUTER ---
-# <<< MUDANÇA 1: Usando a chave do OpenRouter >>>
+# CONFIGURAÇÃO OPENROUTER
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
-# Opcional: Adicione seu site para os headers, é uma boa prática recomendada pelo OpenRouter.
 
-# <<< MUDANÇA 2: Definindo os modelos que queremos usar via OpenRouter >>>
-# Modelo primário (mais caro/melhor qualidade)
+# Modelo primário 
 PRIMARY_TRANSLATION_MODEL = "openai/gpt-4o-mini"
-# Modelo de fallback (mais barato)
+
+# Modelo de fallback
 FALLBACK_TRANSLATION_MODEL = "google/gemini-flash-1.5"
 
 openrouter_client = None
 if OPENROUTER_API_KEY:
     try:
-        # <<< MUDANÇA 3: Inicializando um ÚNICO cliente, apontado para o OpenRouter >>>
-        # A biblioteca da OpenAI é compatível com qualquer API que segue seu formato.
         openrouter_client = openai.OpenAI(
             api_key=OPENROUTER_API_KEY,
             base_url=OPENROUTER_BASE_URL,
@@ -34,10 +29,7 @@ if OPENROUTER_API_KEY:
 else:
     logger.warning("OPENROUTER_API_KEY não encontrada. Serviços de tradução indisponíveis.")
 
-# O google-genai não é mais necessário, toda a lógica foi centralizada.
-
 def _build_prompt(text: str, source_lang: str = None) -> str:
-    """Cria o prompt padronizado para manter consistência entre modelos."""
     lang_hint = f" do idioma {source_lang}" if source_lang else ""
     
     return f"""
@@ -55,9 +47,7 @@ Texto original{lang_hint}:
 Responda apenas com a tradução final (sem introduções ou explicações).
 """
 
-# <<< MUDANÇA 4: Função genérica que aceita o nome do modelo >>>
 def _translate_with_openrouter(text: str, prompt: str, model_name: str) -> str:
-    """Tenta traduzir usando um modelo específico via OpenRouter."""
     if not openrouter_client:
         raise RuntimeError("Cliente OpenRouter não configurado")
 
@@ -73,26 +63,19 @@ def _translate_with_openrouter(text: str, prompt: str, model_name: str) -> str:
     return response.choices[0].message.content.strip()
 
 def translate_to_pt_br(text: str, source_lang: str = None) -> str:
-    """
-    Traduz texto para PT-BR usando o modelo primário do OpenRouter, 
-    com fallback automático para um modelo secundário.
-    """
     if not text or not text.strip():
         return text
 
     prompt = _build_prompt(text, source_lang)
     translated = None
     provider_used = None
-
-    # <<< MUDANÇA 5: Lógica de Primary/Fallback usando o mesmo cliente >>>
-    # 1. Tentar Modelo Primário (ex: GPT-4o Mini)
     try:
         translated = _translate_with_openrouter(text, prompt, model_name=PRIMARY_TRANSLATION_MODEL)
         provider_used = PRIMARY_TRANSLATION_MODEL
     except Exception as e:
         logger.warning(f"Falha na tradução via {PRIMARY_TRANSLATION_MODEL}: {e}. Tentando fallback...")
         
-        # 2. Tentar Modelo de Fallback (ex: Gemini Flash)
+        #Tentar Modelo de Fallback
         try:
             translated = _translate_with_openrouter(text, prompt, model_name=FALLBACK_TRANSLATION_MODEL)
             provider_used = FALLBACK_TRANSLATION_MODEL

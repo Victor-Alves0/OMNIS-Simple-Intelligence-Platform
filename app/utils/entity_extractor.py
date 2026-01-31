@@ -1,18 +1,12 @@
-# app/utils/entity_extractor.py
 import logging
 from typing import List, Dict
 from functools import lru_cache
 
 import spacy
 
-# ────────────────────────────────────────────────
 # CONFIGURAÇÃO
-# ────────────────────────────────────────────────
-
 logger = logging.getLogger("omnis.extractor")
 
-# Modelo multilíngue — essencial para RSS/Telegram traduzidos e HUMINT
-# Boa cobertura para PERSON / ORG / GPE / LOC
 MODEL_NAME = "xx_ent_wiki_sm"
 
 # Limite defensivo de caracteres para NER
@@ -29,13 +23,9 @@ class EntityExtractor:
         self.model = self._load_model()
 
     def _load_model(self):
-        """
-        Carrega o modelo spaCy com apenas os componentes necessários.
-        """
         try:
             logger.info(f"Carregando modelo NER spaCy '{MODEL_NAME}'...")
 
-            # Mantemos apenas os componentes essenciais para NER
             disabled_pipes = ["parser", "tagger", "lemmatizer", "attribute_ruler"]
             model = spacy.load(MODEL_NAME, disable=disabled_pipes)
 
@@ -57,11 +47,6 @@ class EntityExtractor:
             return None
 
     def _sanitize_text(self, text: str) -> str:
-        """
-        Sanitização mínima:
-        - normaliza whitespace
-        - aplica truncamento defensivo
-        """
         text = " ".join(text.split())
         if len(text) > MAX_TEXT_LENGTH:
             text = text[:MAX_TEXT_LENGTH]
@@ -69,10 +54,6 @@ class EntityExtractor:
 
     @lru_cache(maxsize=2048)
     def _extract_cached(self, text: str) -> List[Dict]:
-        """
-        Extração real com cache LRU.
-        O cache reduz drasticamente custo em textos repetidos.
-        """
         if not self.model:
             return []
 
@@ -91,16 +72,6 @@ class EntityExtractor:
             return []
 
     def extract_entities(self, text: str) -> List[Dict]:
-        """
-        Extrai entidades nomeadas de um texto.
-
-        Args:
-            text: Texto a ser analisado.
-
-        Returns:
-            Lista de dicionários:
-            [{'text': 'Iran', 'label': 'GPE'}]
-        """
         if not text or not isinstance(text, str):
             return []
 
@@ -110,17 +81,9 @@ class EntityExtractor:
 
         return self._extract_cached(sanitized)
 
-
-# ────────────────────────────────────────────────
-# SINGLETON GLOBAL
-# ────────────────────────────────────────────────
-
 entity_extractor = EntityExtractor()
 
-
-# ────────────────────────────────────────────────
 # TESTE ISOLADO
-# ────────────────────────────────────────────────
 if __name__ == "__main__":
     logger.info("Executando teste do módulo entity_extractor...")
 

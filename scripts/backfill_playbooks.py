@@ -1,5 +1,4 @@
-﻿"""Utility to reprocess existing signals and feed playbooks/cases"""
-import argparse
+﻿import argparse
 
 from neo4j import GraphDatabase
 
@@ -18,7 +17,3 @@ def main():
         run_backfill(driver, days=args.days, run_playbooks=not args.dry_run)
     finally:
         driver.close()
-
-
-if __name__ == "__main__":
-    main()

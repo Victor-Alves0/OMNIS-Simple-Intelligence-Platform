@@ -45,7 +45,6 @@ class SeverityCalculator:
             for kw, regex in patterns:
                 if regex.search(lowered):
                     matches.append(kw)
-        # remover duplicados preservando ordem
         seen = set()
         deduped = []
         for kw in matches:

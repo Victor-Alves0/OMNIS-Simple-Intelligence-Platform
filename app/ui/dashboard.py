@@ -1,4 +1,3 @@
-# app/ui/dashboard.py
 import math
 import uuid
 from pathlib import Path
@@ -36,12 +35,8 @@ from app.utils.metrics import (
 )
 from app.monitoring.prometheus_exporter import start_prometheus_exporter
 
-# Observability
 start_prometheus_exporter(METRICS_PORT)
 
-# ────────────────────────────────────────────────────────────────────────────────
-# 1. STREAMLIT CONFIG + THEME
-# ────────────────────────────────────────────────────────────────────────────────
 if "page_config_set" not in st.session_state:
     st.set_page_config(
         page_title="OMNIS | Intelligence Dashboard",
@@ -75,9 +70,7 @@ div[data-testid="stDataFrame"] { border: 1px solid #374151; border-radius: 6px; 
     unsafe_allow_html=True,
 )
 
-# ────────────────────────────────────────────────────────────────────────────────
 # 2. ENV & DRIVER
-# ────────────────────────────────────────────────────────────────────────────────
 PLAYBOOK_PATH = Path(__file__).resolve().parents[1] / "config" / "playbooks.yaml"
 
 
@@ -113,7 +106,7 @@ def run_query(query: str, params: Dict | None = None) -> List[Dict]:
                         clean[key] = value
                 rows.append(clean)
             return rows
-    except Exception as exc:  # pragma: no cover
+    except Exception as exc: 
         st.error(f"Database error: {exc}")
         return []
 
@@ -360,9 +353,7 @@ def resolve_review(review_id: str) -> None:
         )
 
 
-# ────────────────────────────────────────────────────────────────────────────────
 # 3. AUTH
-# ────────────────────────────────────────────────────────────────────────────────
 def check_auth() -> bool:
     if st.session_state.get("authenticated"):
         return True
@@ -385,9 +376,7 @@ def check_auth() -> bool:
 if not check_auth():
     st.stop()
 
-# ────────────────────────────────────────────────────────────────────────────────
 # 4. SIDEBAR CONTROLS
-# ────────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.title("🛰️ OMNIS INTEL")
 
@@ -407,9 +396,7 @@ with st.sidebar:
         st.session_state.clear()
         st.rerun()
 
-# ────────────────────────────────────────────────────────────────────────────────
 # 5. HIGHLIGHTS (KPIs, TOP THEME, TRUST BOARD, ALERTS)
-# ────────────────────────────────────────────────────────────────────────────────
 kpi = run_query(
     """
 MATCH (s:Signal)
@@ -620,9 +607,7 @@ with highlight_tabs[3]:
 
 st.divider()
 
-# ────────────────────────────────────────────────────────────────────────────────
 # 6. TABS
-# ────────────────────────────────────────────────────────────────────────────────
 tabs = st.tabs(
     [
         "🎯 Themes",
@@ -640,7 +625,6 @@ tabs = st.tabs(
     ]
 )
 
-# ── THEMES TAB ──────────────────────────────────────────────────────────────────
 with tabs[0]:
     if theme_df.empty:
         st.info("Sem temas configurados.")
@@ -688,7 +672,6 @@ with tabs[0]:
             hide_index=True,
         )
 
-# ── GEO TAB ─────────────────────────────────────────────────────────────────────
 with tabs[1]:
     geo_df = pd.DataFrame(
         run_query(
@@ -725,7 +708,6 @@ with tabs[1]:
     else:
         st.info("Sem menções geográficas nos últimos 7 dias.")
 
-# ── ACTORS TAB ──────────────────────────────────────────────────────────────────
 with tabs[2]:
     actors = pd.DataFrame(
         run_query(
@@ -766,7 +748,6 @@ with tabs[2]:
     else:
         st.info("Nenhum ator com perfil calculado.")
 
-# ── SIGNALS TAB ─────────────────────────────────────────────────────────────────
 with tabs[3]:
     st.subheader("Signals Feed")
     col_filters = st.columns(3)
@@ -821,7 +802,6 @@ with tabs[3]:
     else:
         st.info("Nenhum sinal com os filtros selecionados.")
 
-# ── TRENDS TAB ──────────────────────────────────────────────────────────────────
 with tabs[4]:
     trends = pd.DataFrame(
         run_query(
@@ -855,7 +835,6 @@ with tabs[4]:
     else:
         st.info("Sem dados suficientes para a série de 14 dias.")
 
-# ── SEARCH TAB ──────────────────────────────────────────────────────────────────
 with tabs[5]:
     st.subheader("Busca semântica + contextual")
     query = st.text_input("Termo ou entidade")
@@ -931,7 +910,6 @@ with tabs[5]:
                 else:
                     st.info("Nenhum resultado encontrado para esse termo/limiar.")
 
-# ─── REVIEW TAB ────────────────────────────────────────────────────────────────
 with tabs[6]:
     st.subheader("Case Board (Exploração Guiada)")
     case_col1, case_col2 = st.columns(2)
@@ -1012,7 +990,6 @@ with tabs[6]:
                 st.success("Status atualizado.")
                 st.rerun()
 
-# ───────── PREDICTIONS TAB ─────────────────────────────────────────────────────
 with tabs[7]:
     st.subheader("Predições assistidas por IA")
     predictor = get_prediction_engine()
@@ -1037,7 +1014,6 @@ with tabs[7]:
                 except Exception as exc:
                     st.error(f"Falha ao gerar previsão: {exc}")
 
-# ───────── GRAPH TAB ───────────────────────────────────────────────────────────
 with tabs[8]:
     st.subheader("Graph Explorer")
     graph_mode = st.radio(
@@ -1080,7 +1056,6 @@ with tabs[8]:
             components.html(html, height=650, scrolling=True)
             st.caption("Nós roxos são Playbooks, laranja são Casos e azul são Entidades. Explore para entender o encadeamento de relacionamentos.")
 
-# ───────── REVIEW TAB ───────────────────────────────────────────────────────────
 with tabs[9]:
     st.subheader("Entity Review Queue")
     reviews = pd.DataFrame(
@@ -1122,7 +1097,6 @@ with tabs[9]:
                     st.success("Revisão marcada como resolvida.")
                     st.rerun()
 
-# ───────── OPS TAB ──────────────────────────────────────────────────────────────
 with tabs[10]:
     st.subheader("Operations Center")
     st.caption("Execute tarefas de backfill e playbooks diretamente do dashboard.")
@@ -1142,7 +1116,6 @@ with tabs[10]:
                 engine.run()
             st.success("Playbooks executados.")
 
-# ───────── HEALTH TAB ──────────────────────────────────────────────────────────
 with tabs[11]:
     st.subheader("Observabilidade")
     metrics = run_query(

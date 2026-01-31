@@ -1,9 +1,5 @@
-# app/config/rules/locations.yaml
-
 locations:
-  # ==================================
   # PAÍSES (ID = CÓDIGO ISO-3)
-  # ==================================
   - id: USA
     name: "United States"
     type: Country
@@ -76,9 +72,7 @@ locations:
     region: East Asia
     aliases: ["Taiwan", "Republic of China"]
 
-  # ==================================
   # CIDADES E LOCAIS ESTRATÉGICOS
-  # ==================================
   - id: GAZA_STRIP
     name: "Gaza Strip"
     type: Disputed Territory

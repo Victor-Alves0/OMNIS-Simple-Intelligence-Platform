@@ -16,8 +16,6 @@ from app.utils.metrics import resolver_health, global_metrics
 
 
 class EntityResolver:
-    """Centraliza normalização, resolução e enriquecimento básico."""
-
     def __init__(self, driver: GraphDatabase.driver):
         self.driver = driver
         self.geo_enricher = GeoEnricher()
@@ -35,9 +33,6 @@ class EntityResolver:
                 session.run(q)
         logger.info("EntityResolver | Constraints checked")
 
-    # ------------------------------------------------------------------
-    # Mention builders
-    # ------------------------------------------------------------------
     COMMON_ACRONYMS = {
         "USA",
         "UK",
@@ -127,7 +122,6 @@ class EntityResolver:
                 mentions.append(mention)
         return mentions
 
-    # ------------------------------------------------------------------
     def _mention_to_dict(self, mention: EntityMention) -> Dict:
         review_reason = mention.review_reason or ("low_confidence" if mention.needs_review else None)
         return {

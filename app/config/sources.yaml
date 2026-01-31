@@ -1,8 +1,5 @@
-# ============================================================
-# CATÁLOGO DE FONTES DE COLETA (DATA INGESTION LAYER)
-# V2 - ADICIONADO SUPORTE A 'trust_score' POR FONTE
-# ============================================================
 
+# CATÁLOGO DE FONTES DE COLETA (DATA INGESTION LAYER)
 global:
   ingestion:
     deduplication: true
@@ -17,28 +14,23 @@ global:
 ner:
   enabled: true
 
-# ============================================================
 # 1. GDELT PROJECT (Eventos Globais)
-# ============================================================
 gdelt:
   enabled: true
-  # GDELT é uma fonte agregada de notícias. Sua confiança é a média do mercado.
+  # GDELT é uma fonte agregada de notícias.
   trust_score: 0.75 
   url_lastupdate: http://data.gdeltproject.org/gdeltv2/lastupdate.txt
   base_filters:
     - "abs(GoldsteinScale) >= 1.0" 
     - "NumArticles >= 2"
 
-# ============================================================
+
 # 2. TELEGRAM INTELLIGENCE (HUMINT/OSINT)
-# ============================================================
 telegram:
   enabled: true
   client_session: "omnis_session"
-  
-  # --- MUDANÇA ESTRUTURAL: De lista de strings para lista de objetos ---
   channels:
-    # --- High Value Targets (HVT) - Alta Confiança ---
+    # High Value Targets (HVT) - Alta Confiança
     - name: osinttechnical
       trust_score: 0.90
     - name: OSINTdefender
@@ -50,27 +42,27 @@ telegram:
     - name: ClashReport
       trust_score: 0.75
     
-    # --- Mídia Estatal / Afiliada - Viés Elevado, Factual com Cautela ---
-    - name: tasnimnews         # Afiliado IRGC
+    # Mídia Estatal / Afiliada - Viés Elevado, Factual com Cautela
+    - name: tasnimnews # Afiliado IRGC
       trust_score: 0.60
-    - name: sepah_pasdaran     # Oficial IRGC
+    - name: sepah_pasdaran  # Oficial IRGC
       trust_score: 0.60
-    - name: presstv            # Mídia Estatal Irã
+    - name: presstv # Mídia Estatal Irã
       trust_score: 0.55
-    - name: rian_ru            # Mídia Estatal Rússia
+    - name: rian_ru   # Mídia Estatal Rússia
       trust_score: 0.55
 
-    # --- Canais de Notícias / Agregadores - Confiança Média ---
+    # Canais de Notícias / Agregadores - Confiança Média
     - name: middleeastobserver
       trust_score: 0.70
     - name: almanarnews
-      trust_score: 0.65 # Afiliado Hezbollah
+      trust_score: 0.65 #Afiliado Hezbollah
     - name: UaOnlii
-      trust_score: 0.70 # Pró-Ucrânia
+      trust_score: 0.70 #Pró-Ucrânia
     - name: southfronteng
       trust_score: 0.60 # Pró-Rússia
 
-    # --- Análise / Think Tanks - Confiança Alta, mas com viés de análise ---
+    # Análise / Think Tanks - Confiança Alta, mas com viés de análise
     - name: iswnews
       trust_score: 0.85
     - name: iswnews_en
@@ -82,9 +74,7 @@ telegram:
     - name: IndiaGeoPolitics
       trust_score: 0.75
 
-# ============================================================
 # 3. RSS FEEDS (VIA GOOGLE NEWS)
-# ============================================================
 rss:
   enabled: true
   update_interval_minutes: 30
@@ -96,7 +86,6 @@ rss:
       region: global
       trust_score: 0.95 # Agência de notícias primária
 
-    # Monitora "israel" E "iran" nos sites da AP e Al Jazeera
     - url: "https://news.google.com/rss/search?q=%22israel%22+%22iran%22+site:apnews.com+OR+site:aljazeera.com&hl=en-US&gl=US&ceid=US:en"
       category: thematic_intelligence
       region: middle_east
@@ -132,7 +121,7 @@ rss:
       region: middle_east
       trust_score: 0.82
 
-    # Escalada Ucrânia/Rússia - imprensa regional
+    # Escalada Ucrânia/Rússia imprensa regional
     - url: "https://news.google.com/rss/search?q=site:kyivindependent.com+OR+site:pravda.com.ua&hl=en-US&gl=US&ceid=US:en"
       category: ukraine_watch
       region: europe
@@ -156,13 +145,10 @@ rss:
       region: global
       trust_score: 0.9
 
-# ============================================================
 # 4. API SEARCHES (Optional / On Demand)
-# ============================================================
 x_search:
   enabled: false
   # Posts no X geralmente têm a menor confiança, a menos que venham de contas verificadas.
-  # A lógica de confiança aqui seria mais complexa (ex: por autor).
   trust_score: 0.40 
   mode: Latest
   limit: 50

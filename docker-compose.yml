@@ -22,9 +22,7 @@ services:
     build: .
     container_name: omnis_app
     volumes:
-      # <<< MUDANÇA AQUI: Mapeia o código local para dentro do contêiner >>>
       - .:/app
-      # O volume das sessões do telegram permanece, mas o mapeamento do código é a chave
       - ./volumes/telegram_sessions:/app/sessions
     environment:
       PYTHONPATH: /app
@@ -57,7 +55,6 @@ services:
       NEO4J_PASSWORD: "${NEO4J_PASSWORD}"
       DASHBOARD_USER: "${DASHBOARD_USER:-admin}"
       DASHBOARD_PASS: "${DASHBOARD_PASS:-nsa-secure-2026}"
-      # Adicionando a chave do OpenRouter para o contêiner
       OPENROUTER_API_KEY: "${OPENROUTER_API_KEY}"
       METRICS_PORT: "9465"
     depends_on:

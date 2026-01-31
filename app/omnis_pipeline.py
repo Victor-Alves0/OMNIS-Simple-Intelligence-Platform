@@ -1,4 +1,3 @@
-# app/pipeline.py
 import asyncio
 from neo4j import GraphDatabase
 
@@ -16,10 +15,6 @@ from app.pipeline.ner_enricher import NerEnricher
 
 class OmnisPipeline:
     def __init__(self, driver: GraphDatabase.driver):
-        """
-        Recebe o driver Neo4j e injeta nos componentes.
-        Driver é thread-safe, sessões NÃO são.
-        """
         self.driver = driver
 
         # Coletores
@@ -35,7 +30,6 @@ class OmnisPipeline:
         self.themes = CONFIG.get("rules", {}).get("themes", [])
 
     def close(self):
-        """Fecha recursos globais."""
         try:
             if self.driver:
                 self.driver.close()
@@ -43,9 +37,7 @@ class OmnisPipeline:
         except Exception:
             logger.warning("Pipeline | Erro ao fechar driver Neo4j.", exc_info=True)
 
-    # ────────────────────────────────────────────────
     # INTELIGÊNCIA / CORRELAÇÃO
-    # ────────────────────────────────────────────────
     def run_theme_analysis(self):
         logger.info("Pipeline | Executando análise de Temas (Correlation Engine)...")
 
@@ -117,9 +109,6 @@ class OmnisPipeline:
                     exc_info=True
                 )
 
-    # ────────────────────────────────────────────────
-    # SCHEDULER
-    # ────────────────────────────────────────────────
     async def run_scheduler(self):
         logger.info("Pipeline | Scheduler iniciado (RSS / GDELT / X)")
 
@@ -132,14 +121,12 @@ class OmnisPipeline:
                 asyncio.to_thread(self._safe_run, self.x_search.run, "X_SEARCH"),
             ]
 
-            # Executa coletores em paralelo
             await asyncio.gather(*tasks)
 
             # NER centralizado
             logger.info("Pipeline | Coleta concluída. Rodando NER...")
             await asyncio.to_thread(self.ner.run, 1000)
 
-            # Correlação temática
             logger.info("Pipeline | Rodando correlação de temas...")
             await asyncio.to_thread(self.run_theme_analysis)
 
@@ -147,10 +134,6 @@ class OmnisPipeline:
             await asyncio.sleep(1800)
 
     def _safe_run(self, fn, name: str):
-        """
-        Executa coletores de forma isolada para evitar
-        que uma falha interrompa o ciclo inteiro.
-        """
         try:
             fn()
         except Exception:
@@ -159,9 +142,7 @@ class OmnisPipeline:
                 exc_info=True
             )
 
-    # ────────────────────────────────────────────────
     # START GLOBAL
-    # ────────────────────────────────────────────────
     async def start(self):
         logger.info("🛡️ OMNIS INTELLIGENCE SYSTEM STARTING...")
 
@@ -173,7 +154,3 @@ class OmnisPipeline:
 
         finally:
             self.close()
-
-
-if __name__ == "__main__":
-    pass

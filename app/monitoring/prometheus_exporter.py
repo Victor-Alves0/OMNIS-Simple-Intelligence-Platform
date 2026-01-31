@@ -1,4 +1,4 @@
-"""Prometheus exporter for OMNIS metrics."""
+
 from __future__ import annotations
 
 from typing import Dict
@@ -17,9 +17,7 @@ from app.utils.omnis_logger import logger
 
 
 class _OmnisCollector:
-    """Bridge the internal metrics registry to Prometheus."""
-
-    def collect(self):  # pragma: no cover - Prometheus interface
+    def collect(self):
         snapshot = global_metrics.snapshot()
         counters: Dict[str, float] = snapshot.get("counters", {})
         gauges: Dict[str, float] = snapshot.get("gauges", {})
@@ -66,7 +64,6 @@ _exporter_started = False
 
 
 def start_prometheus_exporter(port: int | None = None):
-    """Start the Prometheus HTTP exporter once per process."""
     global _exporter_started
     if _exporter_started:
         return

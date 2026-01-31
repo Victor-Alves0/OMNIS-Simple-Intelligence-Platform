@@ -1,4 +1,3 @@
-# app/pipeline/ner_enricher.py
 from typing import List, Dict, Set
 from functools import lru_cache
 
@@ -12,14 +11,6 @@ from app.utils.normalizer import normalize_actor
 
 
 class NerEnricher:
-    """
-    Responsável por:
-    - Extrair entidades (NER) de Signals já Processed
-    - Normalizar atores e locais
-    - Criar nós Actor / Location
-    - Criar relações :MENTIONS
-    - Marcar Signal como NER_DONE
-    """
 
     def __init__(self, driver: GraphDatabase.driver, batch_size: int = 200):
         self.driver = driver
@@ -36,12 +27,7 @@ class NerEnricher:
         )
         self.actor_norm_map = {k.lower(): v for k, v in raw_map.items()}
 
-    # ────────────────────────────────────────────────
     def run(self, limit: int = 1000):
-        """
-        Entry point do enricher.
-        Processa Signals Processed que ainda não passaram por NER.
-        """
         logger.info("NER Enricher iniciado")
 
         with self.driver.session() as session:
@@ -62,7 +48,6 @@ class NerEnricher:
         if not signals:
             logger.info("NER Enricher: nenhum Signal pendente")
             return
-
         logger.info(f"NER Enricher: {len(signals)} Signals para processar")
 
         for i in range(0, len(signals), self.batch_size):
@@ -71,7 +56,6 @@ class NerEnricher:
 
         logger.info("NER Enricher finalizado com sucesso")
 
-    # ────────────────────────────────────────────────
     def _process_batch(self, batch: List[Dict]):
         enriched = []
 
@@ -94,10 +78,8 @@ class NerEnricher:
                     "locations": list(locations),
                 }
             )
-
         self._persist(enriched)
 
-    # ────────────────────────────────────────────────
     def _extract_entities(self, text: str) -> (Set[str], Set[str]):
         actors = set()
         locations = set()
@@ -121,17 +103,12 @@ class NerEnricher:
 
         return actors, locations
 
-    # ────────────────────────────────────────────────
     @lru_cache(maxsize=4096)
     def _normalize_actor(self, text: str) -> str:
         norm = normalize_actor(text)
         return self.actor_norm_map.get(norm.lower(), norm)
 
-    # ────────────────────────────────────────────────
     def _persist(self, batch: List[Dict]):
-        """
-        Persiste entidades por meio do resolver e marca Signal como NER_DONE
-        """
         self.resolver.process_batch(batch)
 
         with self.driver.session() as session:

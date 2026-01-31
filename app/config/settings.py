@@ -1,26 +1,19 @@
-# app/config/settings.py
 import os
 import logging
 import yaml
 from pathlib import Path
 from dotenv import load_dotenv
 
-# ============================================================
 # 1. Configuração Inicial
-# ============================================================
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("OMNIS_CONFIG")
 
-# Define caminhos base para ser agnóstico ao SO
-BASE_DIR = Path(__file__).resolve().parent.parent.parent  # Raiz do projeto
+BASE_DIR = Path(__file__).resolve().parent.parent.parent 
 CONFIG_DIR = BASE_DIR / "app" / "config"
 RULES_DIR = CONFIG_DIR / "rules"
 
-# ============================================================
 # 2. Função utilitária para carregar YAML
-# ============================================================
-
 def load_yaml(file_path: Path):
     """Carrega um arquivo YAML com tratamento de erro robusto."""
     if not file_path.exists():
@@ -34,16 +27,9 @@ def load_yaml(file_path: Path):
         logger.error(f"❌ Erro crítico ao ler {file_path}: {e}")
         return {}
 
-# ============================================================
 # 3. Carregar Fontes (Data Ingestion)
-# ============================================================
-
 SOURCES_PATH = CONFIG_DIR / "sources.yaml"
 CONFIG = load_yaml(SOURCES_PATH)
-
-# ============================================================
-# 4. Variáveis de Configuração (Infra + Features)
-# ============================================================
 
 # Ner
 NER_ENABLED = CONFIG.get("ner", {}).get("enabled", True)
@@ -76,14 +62,11 @@ X_BEARER_TOKEN = os.getenv("X_BEARER_TOKEN")
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
 SPACY_MODEL = os.getenv("SPACY_MODEL")
 
-# ============================================================
 # 5. Carregar Regras de Inteligência (Logic Layer)
-# ============================================================
-
 ACTORS_PATH = RULES_DIR / "actors.yaml"
 ONTOLOGY_PATH = RULES_DIR / "ontology.yaml"
 THEMES_PATH = RULES_DIR / "themes.yaml"
-LOCATIONS_PATH = RULES_DIR / "locations.yaml"  # opcional
+LOCATIONS_PATH = RULES_DIR / "locations.yaml"
 
 CONFIG["rules"] = {
     "actors": load_yaml(ACTORS_PATH).get("actors", {}),
@@ -91,10 +74,6 @@ CONFIG["rules"] = {
     "themes": load_yaml(THEMES_PATH).get("themes", []),
     "locations": load_yaml(LOCATIONS_PATH).get("locations", [])
 }
-
-# ============================================================
-# 6. Validação básica
-# ============================================================
 
 if not CONFIG.get("rules", {}).get("concepts"):
     logger.warning("⚠️ Ontologia (ontology.yaml) parece vazia ou não foi carregada.")

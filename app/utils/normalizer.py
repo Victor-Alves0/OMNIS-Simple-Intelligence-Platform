@@ -1,4 +1,3 @@
-# app/utils/normalizer.py
 import re
 from datetime import datetime, timezone
 from functools import lru_cache
@@ -6,18 +5,9 @@ from typing import Optional
 
 import pycountry
 
-# ============================================================
 # Normalize country names / codes
-# ============================================================
 @lru_cache(maxsize=512)
 def normalize_country(name_or_code: Optional[str]) -> str:
-    """
-    Converte nome ou código de país para ISO 3166 alpha-3.
-    Ex:
-        'US' -> 'USA'
-        'United States' -> 'USA'
-        'br' -> 'BRA'
-    """
     if not name_or_code:
         return "UNKNOWN"
 
@@ -42,17 +32,8 @@ def normalize_country(name_or_code: Optional[str]) -> str:
     except LookupError:
         return "UNKNOWN"
 
-
-# ============================================================
 # Normalize actors
-# ============================================================
 def normalize_actor(name: Optional[str], actors_mapping: dict | None = None) -> str:
-    """
-    Normaliza nomes de atores:
-    - remove pontuação lateral
-    - normaliza espaços
-    - aplica mapping opcional
-    """
     if not name:
         return "UNKNOWN"
 
@@ -66,18 +47,8 @@ def normalize_actor(name: Optional[str], actors_mapping: dict | None = None) -> 
 
     return cleaned.upper()
 
-
-# ============================================================
 # Normalize timestamps
-# ============================================================
 def normalize_timestamp(ts) -> datetime:
-    """
-    Converte timestamps variados para datetime UTC tz-aware.
-    Aceita:
-    - datetime (naive ou aware)
-    - string ISO / epoch
-    - pandas.Timestamp (fallback)
-    """
     if ts is None:
         return datetime.now(timezone.utc)
 
@@ -96,7 +67,6 @@ def normalize_timestamp(ts) -> datetime:
     except Exception:
         pass
 
-    # Fallback opcional para pandas (se instalado)
     try:
         import pandas as pd
 
@@ -105,10 +75,7 @@ def normalize_timestamp(ts) -> datetime:
     except Exception:
         return datetime.now(timezone.utc)
 
-
-# ============================================================
-# Clean text (dedup / NLP prep)
-# ============================================================
+# Clean text
 def clean_text(text: Optional[str]) -> str:
     """
     Limpa texto para NLP e deduplicação:
@@ -126,10 +93,6 @@ def clean_text(text: Optional[str]) -> str:
 
     return text.strip()
 
-
-# ============================================================
-# Teste rápido
-# ============================================================
 if __name__ == "__main__":
     print(normalize_country("us"))          # USA
     print(normalize_country("Brazil"))      # BRA

@@ -1,4 +1,3 @@
-# app/collectors/x_search.py
 import re
 import tweepy
 from neo4j import GraphDatabase
@@ -14,12 +13,8 @@ from app.utils.normalizer import (
 from app.utils.vectorizer import vectorizer
 from app.ner.service import ner_service
 
-# ────────────────────────────────────────────────
 # CREDENCIAIS X
-# ────────────────────────────────────────────────
-# ────────────────────────────────────────────────
 # ENGINE DE REGRAS (NER + KEYWORDS)
-# ────────────────────────────────────────────────
 class XRuleEngine:
     def __init__(self):
         rules = CONFIG.get("rules", {})
@@ -61,7 +56,6 @@ class XRuleEngine:
         actors = set()
         locations = set()
 
-        # ─── NER ───────────────────────────────────
         entities = []
 
         if NER_ENABLED:
@@ -82,7 +76,6 @@ class XRuleEngine:
                 if loc != "UNKNOWN":
                     locations.add(loc)
 
-        # ─── KEYWORDS ──────────────────────────────
         keywords = []
         if self.global_pattern:
             matches = self.global_pattern.findall(text)
@@ -94,9 +87,7 @@ class XRuleEngine:
         return severity, list(actors)[:5], list(locations)[:3], keywords[:10]
 
 
-# ────────────────────────────────────────────────
 # COLETOR X
-# ────────────────────────────────────────────────
 class XSearchCollector:
     def __init__(self, driver: GraphDatabase.driver):
         self.driver = driver

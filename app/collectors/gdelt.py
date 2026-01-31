@@ -1,4 +1,3 @@
-# app/collectors/gdelt.py
 import io
 import math
 import zipfile
@@ -53,9 +52,6 @@ class GdeltIngestor:
 
         self.trust_score = CONFIG.get("gdelt", {}).get("trust_score", 0.75)
 
-    # ────────────────────────────────────────────────
-    # Neo4j Constraints
-    # ────────────────────────────────────────────────
     def ensure_constraints(self):
         queries = [
             "CREATE CONSTRAINT IF NOT EXISTS FOR (s:Signal) REQUIRE s.uid IS UNIQUE",
@@ -67,9 +63,6 @@ class GdeltIngestor:
                 session.run(q)
         logger.info("Constraints GDELT verificadas no Neo4j")
 
-    # ────────────────────────────────────────────────
-    # Fetch latest export
-    # ────────────────────────────────────────────────
     @retry(stop=stop_after_attempt(5), wait=wait_exponential(min=4, max=60))
     def get_latest_events_url(self) -> Optional[str]:
         r = requests.get(GDELT_LASTUPDATE_URL, timeout=15)
@@ -79,9 +72,6 @@ class GdeltIngestor:
                 return line.split()[2]
         return None
 
-    # ────────────────────────────────────────────────
-    # Sentence builder (determinístico)
-    # ────────────────────────────────────────────────
     def _create_sentence_from_row(self, row) -> str:
         a1 = row.get("Actor1Name") or "um ator desconhecido"
         a2 = row.get("Actor2Name")
@@ -91,9 +81,6 @@ class GdeltIngestor:
             return f"{a1} interagiu com {a2} em {loc}."
         return f"{a1} realizou uma ação em {loc}."
 
-    # ────────────────────────────────────────────────
-    # Download + parse
-    # ────────────────────────────────────────────────
     def download_and_parse(self, url: str) -> Optional[pd.DataFrame]:
         logger.info(f"Baixando GDELT: {url}")
         r = requests.get(url, timeout=90)
@@ -110,18 +97,13 @@ class GdeltIngestor:
                     engine="python",
                     on_bad_lines="warn",
                 )
-
-        # Numeric fields
         for c in ["GoldsteinScale", "NumMentions", "NumSources", "NumArticles", "AvgTone"]:
             df[c] = pd.to_numeric(df[c], errors="coerce")
 
-        # Timestamp
         df["DATEADDED"] = (
             pd.to_datetime(df["DATEADDED"], format="%Y%m%d%H%M%S", errors="coerce")
             .dt.tz_localize(timezone.utc)
         )
-
-        # Country codes → ISO3
         @lru_cache(maxsize=256)
         def to_iso3(code):
             if not code or pd.isna(code):
@@ -132,7 +114,6 @@ class GdeltIngestor:
         for c in ["Actor1CountryCode", "Actor2CountryCode", "ActionGeo_CountryCode"]:
             df[c] = df[c].fillna("UNKNOWN").apply(to_iso3)
 
-        # Normalize actors
         for c in ["Actor1Name", "Actor2Name"]:
             df[c] = df[c].fillna("UNKNOWN").apply(normalize_actor)
             df[c] = df[c].apply(lambda x: self.actor_map.get(x.lower(), x))
@@ -140,7 +121,6 @@ class GdeltIngestor:
         df = df.dropna(subset=["GlobalEventID", "DATEADDED"])
         df["GlobalEventID"] = df["GlobalEventID"].astype(str)
 
-        # Base filters (config)
         for f in CONFIG.get("gdelt", {}).get("base_filters", []):
             try:
                 df = df.query(f, engine="python")
@@ -149,7 +129,6 @@ class GdeltIngestor:
 
         logger.info(f"Eventos após filtros base: {len(df)}")
 
-        # Validação estrutural simples (sem NER)
         df = df[
             (df["Actor1Name"] != "UNKNOWN")
             & (df["Actor2Name"] != "UNKNOWN")
@@ -159,9 +138,6 @@ class GdeltIngestor:
         logger.info(f"Eventos válidos após validação estrutural: {len(df)}")
         return df
 
-    # ────────────────────────────────────────────────
-    # Persist processed events
-    # ────────────────────────────────────────────────
     def process_new_events(self, df: pd.DataFrame):
         if df.empty:
             return
@@ -226,9 +202,6 @@ class GdeltIngestor:
                     trust=self.trust_score,
                 )
 
-    # ────────────────────────────────────────────────
-    # Main entrypoint
-    # ────────────────────────────────────────────────
     def run(self, limit_to_recent: bool = True):
         self.ensure_constraints()
 

@@ -1,4 +1,3 @@
-# app/collectors/rss.py
 import re
 import time
 import hashlib
@@ -14,10 +13,6 @@ from app.utils.vectorizer import vectorizer
 from app.utils.severity_calculator import severity_calculator
 from app.utils.metrics import global_metrics, collector_health
 
-
-# ────────────────────────────────────────────────
-# RSS COLLECTOR (DETERMINÍSTICO / SEM NER)
-# ────────────────────────────────────────────────
 class RssCollector:
     def __init__(self, driver: GraphDatabase.driver):
         self.driver = driver
@@ -27,9 +22,6 @@ class RssCollector:
             .get("ingestion", {}) \
             .get("user_agent", "OMNIS-RSS/1.0")
 
-    # ────────────────────────────────────────────────
-    # Timestamp extractor
-    # ────────────────────────────────────────────────
     def _extract_timestamp(self, entry):
         try:
             ts = entry.get("published_parsed") or entry.get("updated_parsed")
@@ -39,9 +31,6 @@ class RssCollector:
             pass
         return datetime.now(timezone.utc)
 
-    # ────────────────────────────────────────────────
-    # Process newly created signals
-    # ────────────────────────────────────────────────
     def process_new_signals(self, signals: list):
         if not signals:
             return
@@ -110,9 +99,6 @@ class RssCollector:
                     exc_info=True
                 )
 
-    # ────────────────────────────────────────────────
-    # Main loop
-    # ────────────────────────────────────────────────
     def run(self):
         start_time = time.time()
         global_metrics.inc("rss_runs")

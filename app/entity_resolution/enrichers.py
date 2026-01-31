@@ -23,8 +23,6 @@ class GeoMetadata:
 
 
 class GeoEnricher:
-    """Enriquece entidades de localização com dados básicos."""
-
     def __init__(self):
         self._rest_cache: Dict[str, GeoMetadata] = {}
 
@@ -109,8 +107,6 @@ class GeoEnricher:
 
 
 class OrgEnricher:
-    """Heurísticas simples para tipo/setor de organizações/atores."""
-
     KEYWORD_MAP: Dict[str, str] = {
         "BRIGADE": "Military",
         "MINISTRY": "Government",

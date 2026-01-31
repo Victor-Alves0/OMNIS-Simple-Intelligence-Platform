@@ -1,4 +1,4 @@
-"""Relationship layer utilities for OMNIS graph."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -10,8 +10,6 @@ from app.utils.omnis_logger import logger
 
 
 class RelationshipEngine:
-    """Centraliza a criação de relacionamentos entre Playbooks, Casos, Entidades e Sinais."""
-
     def __init__(
         self,
         driver: GraphDatabase.driver,
@@ -31,7 +29,6 @@ class RelationshipEngine:
         playbook_tags: Sequence[str],
         entity_id: str,
     ) -> None:
-        """Garante que casos estejam ligados aos playbooks e sinais/temas relevantes."""
 
         tags = list(playbook_tags or [])
         with self.driver.session() as session:

@@ -1,4 +1,3 @@
-# app/collectors/telegram.py
 import re
 import asyncio
 from pathlib import Path
@@ -24,10 +23,6 @@ from app.utils.vectorizer import vectorizer
 from app.utils.severity_calculator import severity_calculator
 from app.utils.metrics import global_metrics, collector_health
 
-
-# ────────────────────────────────────────────────
-# TELEGRAM HUMINT COLLECTOR (DETERMINÍSTICO)
-# ────────────────────────────────────────────────
 class TelegramHumintCollector:
     def __init__(self, driver: GraphDatabase.driver):
         if not TELEGRAM_API_ID or not TELEGRAM_API_HASH:
@@ -51,13 +46,8 @@ class TelegramHumintCollector:
 
         self.target_channels_config = CONFIG.get("telegram", {}).get("channels", [])
         self.channel_trust_map: Dict[int, float] = {}
-
-        # controle de concorrência pesada
         self.sem = asyncio.Semaphore(5)
 
-    # ────────────────────────────────────────────────
-    # Processamento do sinal (enriquecimento)
-    # ────────────────────────────────────────────────
     async def process_new_signal(
         self,
         uid: str,
@@ -68,7 +58,6 @@ class TelegramHumintCollector:
     ):
         async with self.sem:
             try:
-                # detecção heurística de idioma
                 if re.search(r"[а-яА-Я]", raw_text):
                     lang = "ru"
                 elif re.search(r"[\u0600-\u06FF]", raw_text):
@@ -88,7 +77,6 @@ class TelegramHumintCollector:
                 if not embedding:
                     return
 
-                # severidade inicial puramente baseada na confiança da fonte
                 severity = severity_calculator.score(cleaned, trust_score)
                 raw_severity = severity
                 keywords = severity_calculator.extract_keywords(cleaned)
@@ -121,9 +109,6 @@ class TelegramHumintCollector:
             except Exception:
                 logger.error(f"Erro ao processar sinal Telegram {uid}", exc_info=True)
 
-    # ────────────────────────────────────────────────
-    # Ingestão bruta do sinal
-    # ────────────────────────────────────────────────
     async def ingest_signal(self, chat_id: int, channel_name: str, msg, trust: float):
         raw_text = msg.message
         if not raw_text or len(raw_text) < 20:
@@ -166,10 +151,6 @@ class TelegramHumintCollector:
                     uid, channel_name, raw_text, timestamp, trust
                 )
             )
-
-    # ────────────────────────────────────────────────
-    # Main loop
-    # ────────────────────────────────────────────────
     async def run(self):
         logger.info("Iniciando Telegram Collector...")
         await self.client.start()
@@ -269,6 +250,3 @@ class TelegramHumintCollector:
                 },
             )
 
-
-if __name__ == "__main__":
-    pass

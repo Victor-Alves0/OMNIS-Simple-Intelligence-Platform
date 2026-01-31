@@ -1,4 +1,3 @@
-# app/main.py
 import asyncio
 import sys
 from neo4j import GraphDatabase
@@ -11,19 +10,14 @@ from app.pipeline_scoring import GlobalRiskScorer
 from app.utils.vectorizer import vectorizer
 from app.monitoring.prometheus_exporter import start_prometheus_exporter
 
-# ────────────────────────────────────────────────
 # CONFIGURAÇÃO DE BOOTSTRAP
-# ────────────────────────────────────────────────
 BOOTSTRAP_DELAY = 10
 NEO4J_MAX_RETRIES = 10
 SCORING_INTERVAL = 3600  # 1h
 
 
-# ────────────────────────────────────────────────
 # SETUP DO BANCO DE DADOS
-# ────────────────────────────────────────────────
 async def check_neo4j_health(driver: GraphDatabase.driver):
-    """Aguarda o Neo4j ficar disponível com retry exponencial simples."""
     logger.info(f"Aguardando {BOOTSTRAP_DELAY}s para inicialização dos serviços...")
     await asyncio.sleep(BOOTSTRAP_DELAY)
 
@@ -42,7 +36,6 @@ async def check_neo4j_health(driver: GraphDatabase.driver):
 
 
 def ensure_vector_index(driver: GraphDatabase.driver):
-    """Garante a existência do índice vetorial para embeddings."""
     index_name = "signal_embedding_index"
     vector_dim = len(vectorizer.embed("test"))
 
@@ -66,11 +59,8 @@ def ensure_vector_index(driver: GraphDatabase.driver):
         logger.error(f"❌ Falha ao criar/verificar índice vetorial: {e}", exc_info=True)
 
 
-# ────────────────────────────────────────────────
 # TAREFA DE SCORING (ANALYTICS)
-# ────────────────────────────────────────────────
 async def run_analytics_loop(driver: GraphDatabase.driver, stop_event: asyncio.Event):
-    """Executa scoring global periodicamente."""
     scorer = GlobalRiskScorer(driver=driver)
     logger.info("📊 Analytics Scheduler iniciado.")
 
@@ -88,9 +78,7 @@ async def run_analytics_loop(driver: GraphDatabase.driver, stop_event: asyncio.E
     logger.info("Analytics Scheduler encerrado.")
 
 
-# ────────────────────────────────────────────────
 # MAIN ASYNC LOOP
-# ────────────────────────────────────────────────
 async def main():
     logger.info("🚀 OMNIS INTELLIGENCE SYSTEM STARTING...")
 
@@ -101,7 +89,6 @@ async def main():
         max_connection_pool_size=20,
     )
 
-    # Observability: expose metrics as early as possible
     start_prometheus_exporter(METRICS_PORT)
 
     stop_event = asyncio.Event()

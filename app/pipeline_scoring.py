@@ -1,4 +1,3 @@
-# app/pipeline_scoring.py
 import logging
 import time
 from datetime import datetime, timezone, timedelta
@@ -14,18 +13,6 @@ from app.utils.omnis_logger import logger
 
 
 class GlobalRiskScorer:
-    """
-    Executa análises globais de risco sobre o grafo Neo4j:
-    - Tendência de temas (momentum)
-    - Perfil de risco de atores
-    - Hotspots geográficos
-
-    Arquitetura otimizada para:
-    - Baixa contenção de locks
-    - Poucos roundtrips Neo4j
-    - Execução previsível em produção
-    """
-
     def __init__(self, driver: GraphDatabase.driver):
         self.driver = driver
         self.themes = CONFIG.get('rules', {}).get('themes', [])
@@ -33,14 +20,7 @@ class GlobalRiskScorer:
         config_path = Path(__file__).resolve().parent / "config" / "playbooks.yaml"
         self.playbooks = PlaybookEngine(driver=self.driver, config_path=config_path)
 
-    # ────────────────────────────────────────────────────────────────
-    # 1. TENDÊNCIA DE TEMAS (MOMENTUM)
-    # ────────────────────────────────────────────────────────────────
     def compute_theme_trends(self):
-        """
-        Calcula momentum, volume e severidade média dos temas.
-        Executado em UMA query para evitar N roundtrips.
-        """
         if not self.theme_ids:
             return
 
@@ -78,13 +58,8 @@ class GlobalRiskScorer:
         except Exception as e:
             logger.error("Erro ao calcular tendências de temas", exc_info=True)
 
-    # ────────────────────────────────────────────────────────────────
-    # 2. PERFIL DE RISCO DE ATORES
-    # ────────────────────────────────────────────────────────────────
+    # PERFIL DE RISCO DE ATORES
     def compute_actor_risks(self):
-        """
-        Atualiza RiskProfile de entidades do tipo ACTOR com base nos últimos 3 dias.
-        """
         logger.info("Scoring | Atualizando perfis de risco de entidades (ACTOR)...")
 
         query = """
@@ -125,13 +100,8 @@ class GlobalRiskScorer:
         except Exception as e:
             logger.error("Erro ao atualizar perfis de atores", exc_info=True)
 
-    # ────────────────────────────────────────────────────────────────
-    # 3. HOTSPOTS GEOGRÁFICOS
-    # ────────────────────────────────────────────────────────────────
+    # HOTSPOTS GEOGRÁFICOS
     def compute_geo_hotspots(self):
-        """
-        Atualiza estatísticas de risco geográfico usando entidades canônicas.
-        """
         logger.info("Scoring | Atualizando hotspots geográficos...")
 
         query = """
@@ -150,14 +120,8 @@ class GlobalRiskScorer:
         except Exception as e:
             logger.error("Erro ao atualizar hotspots geográficos", exc_info=True)
 
-    # ────────────────────────────────────────────────────────────────
     # EXECUÇÃO CONTROLADA
-    # ────────────────────────────────────────────────────────────────
     def run_all(self):
-        """
-        Executa todo o pipeline de scoring de forma sequencial e previsível.
-        Evita concorrência excessiva e lock contention no Neo4j.
-        """
         logger.info("Scoring | Iniciando ciclo global de análise de risco...")
         start = time.time()
         self.compute_theme_trends()
@@ -175,13 +139,8 @@ class GlobalRiskScorer:
         global_metrics.inc("scoring_runs")
         logger.info("Scoring | Ciclo global concluído com sucesso.")
 
-    # ────────────────────────────────────────────────────────────────────────────
-    # 4. ALERTAS DE ENTIDADES
-    # ────────────────────────────────────────────────────────────────────────────
+    # ALERTAS DE ENTIDADES
     def compute_entity_alerts(self):
-        """
-        Gera alertas ativos para entidades de alto risco/hotspot.
-        """
         logger.info("Scoring | Atualizando alertas de entidades...")
 
         query = """
@@ -224,7 +183,3 @@ class GlobalRiskScorer:
                 message=f"Score {alert['score']:.1f} ({alert['level']})",
                 severity="critical",
             )
-
-
-if __name__ == "__main__":
-    pass

@@ -1,34 +1,34 @@
-# --- Core & Utils ---
+# Core & Utils
 python-dotenv==1.0.1
 pyyaml==6.0.1
 tenacity==8.2.3
 requests==2.32.3
 
-# --- Data Processing ---
+# Data Processing
 pandas==2.2.0
 pycountry==24.6.1
 setuptools==80.10.2
 
-# --- Database ---
+# Database
 neo4j==5.20.0
 
-# --- AI & LLMs ---
+# AI & LLMs
 openai==2.15.0
 sentence-transformers==2.7.0
 torch==2.2.0
 spacy==3.8.11
 
-# --- Collectors ---
+# Collectors
 telethon==1.35.0
 feedparser==6.0.10
 tweepy==4.14.0
 
-# --- Dashboard ---
+# Dashboard
 streamlit==1.35.0
 plotly==5.24.1
 kaleido==0.2.1
 
-# --- API / Integrations ---
+# API / Integrations
 fastapi==0.110.0
 uvicorn==0.29.0
 pyvis==0.3.2

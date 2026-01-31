@@ -14,7 +14,6 @@ _NLP_LOCK = threading.Lock()
 
 
 def _candidate_models() -> List[str]:
-    """Resolve the list of spaCy models to try, in priority order."""
     configured = SPACY_MODEL or CONFIG.get("ner", {}).get("model") or DEFAULT_MODEL
 
     seen = set()
@@ -49,7 +48,6 @@ def _load_nlp():
             "Nenhum modelo spaCy pode ser carregado. "
             + "; ".join(f"{name}: {err}" for name, err in errors)
         )
-
 
 class NerService:
     LABEL_MAP = {
